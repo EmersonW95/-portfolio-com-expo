@@ -1,15 +1,14 @@
 import { View } from 'react-native';
-
 import { Bullets, Card, FadeIn, Screen, TagRow, Txt } from '@/components/ui';
 import { colors } from '@/constants/theme';
 import { academic, profile } from '@/data/content';
-
 export default function Academico() {
   return (
     <Screen
       eyebrow="§1 — Formação"
       title="Experiência acadêmica"
-      subtitle={`${profile.course} · ${profile.institution} · ${profile.period}`}>
+      subtitle={`${profile.course} · ${profile.institution} · ${profile.period}`}
+    >
       {academic.map((item, i) => (
         <FadeIn key={item.code} delay={80 + i * 70}>
           <Card>

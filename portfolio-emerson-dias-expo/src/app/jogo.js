@@ -2,42 +2,36 @@ import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line } from 'react-native-svg';
-
 import { Button, Card, Screen, Txt } from '@/components/ui';
 import { colors, fonts, radius } from '@/constants/theme';
-import { hangmanWords, type Word } from '@/data/content';
-
+import { hangmanWords } from '@/data/content';
 const MAX_WRONG = 6;
 const KEY_ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
-
-function pickWord(exclude?: string): Word {
+function pickWord(exclude) {
   const pool = hangmanWords.filter((w) => w.word !== exclude);
   return pool[Math.floor(Math.random() * pool.length)];
 }
-
-function chunk<T>(arr: T[], size: number): T[][] {
-  const rows: T[][] = [];
+function chunk(arr, size) {
+  const rows = [];
   for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
   return rows;
 }
 
-function haptic(fn: () => Promise<void>) {
+function haptic(fn) {
   fn().catch(() => {});
 }
-
 export default function Jogo() {
   const { width } = useWindowDimensions();
-  const [current, setCurrent] = useState<Word>(() => pickWord());
-  const [guessed, setGuessed] = useState<string[]>([]);
+  const [current, setCurrent] = useState(() => pickWord());
+  const [guessed, setGuessed] = useState([]);
   const [wins, setWins] = useState(0);
   const [losses, setLosses] = useState(0);
-
   const letters = current.word.split('');
   const wrongGuesses = guessed.filter((l) => !letters.includes(l));
   const win = letters.every((l) => guessed.includes(l));
   const lose = wrongGuesses.length >= MAX_WRONG;
   const gameOver = win || lose;
-
+  /* tremor do boneco a cada erro */
   const shake = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (wrongGuesses.length === 0) return;
@@ -48,26 +42,27 @@ export default function Jogo() {
       Animated.timing(shake, { toValue: 0, duration: 60, useNativeDriver: true }),
     ]).start();
   }, [wrongGuesses.length, shake]);
-
- 
+  /* entrada do banner de vitória/derrota */
   const banner = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     banner.setValue(0);
     if (gameOver) {
-      Animated.timing(banner, { toValue: 1, duration: 320, easing: Easing.out(Easing.back(1.4)), useNativeDriver: true }).start();
+      Animated.timing(banner, {
+        toValue: 1,
+        duration: 320,
+        easing: Easing.out(Easing.back(1.4)),
+        useNativeDriver: true,
+      }).start();
     }
   }, [gameOver, banner]);
-
   const guessLetter = useCallback(
-    (letter: string) => {
+    (letter) => {
       if (gameOver || guessed.includes(letter)) return;
       const next = [...guessed, letter];
       const nextWrong = next.filter((l) => !letters.includes(l)).length;
       const nextWin = letters.every((l) => next.includes(l));
       const nextLose = nextWrong >= MAX_WRONG;
-
       setGuessed(next);
-
       if (nextWin) {
         setWins((w) => w + 1);
         haptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
@@ -80,16 +75,15 @@ export default function Jogo() {
         haptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy));
       }
     },
-    [gameOver, guessed, letters]
+    [gameOver, guessed, letters],
   );
-
   const restart = useCallback(() => {
     setCurrent((prev) => pickWord(prev.word));
     setGuessed([]);
     haptic(() => Haptics.selectionAsync());
   }, []);
-
-  const innerWidth = width - 40 - 34;
+  /* dimensões responsivas */
+  const innerWidth = width - 40 - 34; // margem da tela + padding do card
   const perRow = letters.length <= 9 ? letters.length : Math.ceil(letters.length / 2);
   const gap = 6;
   const slotW = Math.min(36, Math.floor((innerWidth - gap * (perRow - 1)) / perRow));
@@ -97,14 +91,14 @@ export default function Jogo() {
   const gallowsSize = Math.min(220, innerWidth);
   const keyGap = 5;
   const keyW = Math.floor((width - 40 - keyGap * 9) / 10);
-
   const figureColor = lose ? colors.bad : win ? colors.ok : colors.signal;
-
   return (
     <Screen
       eyebrow="Projeto pessoal — §6"
       title="Jogo da Forca"
-      subtitle="Descubra o termo de tecnologia antes de completar o desenho. Você pode errar até 6 vezes.">
+      subtitle="Descubra o termo de tecnologia antes de completar o desenho. Você pode errar até 6 vezes."
+    >
+      {/* placar */}
       <View style={styles.scoreRow}>
         <Score label="vitórias" value={wins} color={colors.ok} />
         <Score label="derrotas" value={losses} color={colors.bad} />
@@ -113,18 +107,112 @@ export default function Jogo() {
       <Card style={{ alignItems: 'center', gap: 14 }}>
         <Animated.View style={{ transform: [{ translateX: shake }] }}>
           <Svg width={gallowsSize} height={gallowsSize * 1.05} viewBox="0 0 200 210">
-            <Line x1={20} y1={198} x2={140} y2={198} stroke={colors.paperDim} strokeOpacity={0.5} strokeWidth={3} strokeLinecap="round" strokeDasharray="6 4" />
-            <Line x1={50} y1={198} x2={50} y2={14} stroke={colors.paperDim} strokeOpacity={0.5} strokeWidth={3} strokeLinecap="round" strokeDasharray="6 4" />
-            <Line x1={50} y1={14} x2={130} y2={14} stroke={colors.paperDim} strokeOpacity={0.5} strokeWidth={3} strokeLinecap="round" strokeDasharray="6 4" />
-            <Line x1={130} y1={14} x2={130} y2={38} stroke={colors.paperDim} strokeOpacity={0.5} strokeWidth={3} strokeLinecap="round" strokeDasharray="6 4" />
-            {wrongGuesses.length >= 1 && <Circle cx={130} cy={55} r={17} stroke={figureColor} strokeWidth={4} fill="none" />}
-            {wrongGuesses.length >= 2 && <Line x1={130} y1={72} x2={130} y2={125} stroke={figureColor} strokeWidth={4} strokeLinecap="round" />}
-            {wrongGuesses.length >= 3 && <Line x1={130} y1={88} x2={108} y2={110} stroke={figureColor} strokeWidth={4} strokeLinecap="round" />}
-            {wrongGuesses.length >= 4 && <Line x1={130} y1={88} x2={152} y2={110} stroke={figureColor} strokeWidth={4} strokeLinecap="round" />}
-            {wrongGuesses.length >= 5 && <Line x1={130} y1={125} x2={112} y2={158} stroke={figureColor} strokeWidth={4} strokeLinecap="round" />}
-            {wrongGuesses.length >= 6 && <Line x1={130} y1={125} x2={148} y2={158} stroke={figureColor} strokeWidth={4} strokeLinecap="round" />}
+            <Line
+              x1={20}
+              y1={198}
+              x2={140}
+              y2={198}
+              stroke={colors.paperDim}
+              strokeOpacity={0.5}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeDasharray="6 4"
+            />
+            <Line
+              x1={50}
+              y1={198}
+              x2={50}
+              y2={14}
+              stroke={colors.paperDim}
+              strokeOpacity={0.5}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeDasharray="6 4"
+            />
+            <Line
+              x1={50}
+              y1={14}
+              x2={130}
+              y2={14}
+              stroke={colors.paperDim}
+              strokeOpacity={0.5}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeDasharray="6 4"
+            />
+            <Line
+              x1={130}
+              y1={14}
+              x2={130}
+              y2={38}
+              stroke={colors.paperDim}
+              strokeOpacity={0.5}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeDasharray="6 4"
+            />
+            {wrongGuesses.length >= 1 && (
+              <Circle cx={130} cy={55} r={17} stroke={figureColor} strokeWidth={4} fill="none" />
+            )}
+            {wrongGuesses.length >= 2 && (
+              <Line
+                x1={130}
+                y1={72}
+                x2={130}
+                y2={125}
+                stroke={figureColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+            )}
+            {wrongGuesses.length >= 3 && (
+              <Line
+                x1={130}
+                y1={88}
+                x2={108}
+                y2={110}
+                stroke={figureColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+            )}
+            {wrongGuesses.length >= 4 && (
+              <Line
+                x1={130}
+                y1={88}
+                x2={152}
+                y2={110}
+                stroke={figureColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+            )}
+            {wrongGuesses.length >= 5 && (
+              <Line
+                x1={130}
+                y1={125}
+                x2={112}
+                y2={158}
+                stroke={figureColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+            )}
+            {wrongGuesses.length >= 6 && (
+              <Line
+                x1={130}
+                y1={125}
+                x2={148}
+                y2={158}
+                stroke={figureColor}
+                strokeWidth={4}
+                strokeLinecap="round"
+              />
+            )}
           </Svg>
         </Animated.View>
+
+        {/* tentativas restantes */}
         <View style={{ alignItems: 'center', gap: 6 }}>
           <View style={{ flexDirection: 'row', gap: 6 }}>
             {Array.from({ length: MAX_WRONG }).map((_, i) => (
@@ -132,10 +220,18 @@ export default function Jogo() {
             ))}
           </View>
           <Txt variant="monoDim">
-            tentativas restantes: <Txt variant="mono" style={{ color: MAX_WRONG - wrongGuesses.length <= 2 ? colors.bad : colors.paper }}>{MAX_WRONG - wrongGuesses.length}</Txt>
+            tentativas restantes:{' '}
+            <Txt
+              variant="mono"
+              style={{ color: MAX_WRONG - wrongGuesses.length <= 2 ? colors.bad : colors.paper }}
+            >
+              {MAX_WRONG - wrongGuesses.length}
+            </Txt>
           </Txt>
         </View>
       </Card>
+
+      {/* palavra */}
       <Card style={{ alignItems: 'center', gap: 12 }}>
         <Txt variant="monoDim" style={{ textAlign: 'center' }}>
           Dica: {current.hint}
@@ -154,7 +250,8 @@ export default function Jogo() {
                         fontFamily: fonts.monoMedium,
                         fontSize: Math.min(24, slotW - 6),
                         color: guessedIt ? colors.paper : colors.bad,
-                      }}>
+                      }}
+                    >
                       {shown ? l : ' '}
                     </Txt>
                   </View>
@@ -170,8 +267,12 @@ export default function Jogo() {
           style={[
             styles.banner,
             win ? styles.bannerWin : styles.bannerLose,
-            { opacity: banner, transform: [{ scale: banner.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }] },
-          ]}>
+            {
+              opacity: banner,
+              transform: [{ scale: banner.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }],
+            },
+          ]}
+        >
           <Txt variant="h3" style={{ color: win ? colors.ok : colors.bad }}>
             {win ? 'Parabéns, você venceu!' : 'Fim de jogo — você perdeu'}
           </Txt>
@@ -184,6 +285,7 @@ export default function Jogo() {
         </Animated.View>
       )}
 
+      {/* teclado virtual */}
       <View style={{ gap: keyGap, alignItems: 'center' }}>
         {KEY_ROWS.map((row) => (
           <View key={row} style={{ flexDirection: 'row', gap: keyGap }}>
@@ -205,8 +307,15 @@ export default function Jogo() {
                     wrong && styles.keyWrong,
                     pressed && { backgroundColor: colors.line },
                     (used || gameOver) && !correct && !wrong && { opacity: 0.45 },
-                  ]}>
-                  <Txt variant="mono" style={{ fontFamily: fonts.monoMedium, color: correct ? colors.ok : wrong ? colors.bad : colors.paper }}>
+                  ]}
+                >
+                  <Txt
+                    variant="mono"
+                    style={{
+                      fontFamily: fonts.monoMedium,
+                      color: correct ? colors.ok : wrong ? colors.bad : colors.paper,
+                    }}
+                  >
                     {letter}
                   </Txt>
                 </Pressable>
@@ -216,6 +325,7 @@ export default function Jogo() {
         ))}
       </View>
 
+      {/* tentativas anteriores */}
       <Card>
         <Txt variant="eyebrow">Tentativas anteriores</Txt>
         {guessed.length === 0 ? (
@@ -246,8 +356,7 @@ export default function Jogo() {
     </Screen>
   );
 }
-
-function Score({ label, value, color }: { label: string; value: number; color: string }) {
+function Score({ label, value, color }) {
   return (
     <View style={styles.score}>
       <Txt variant="h2" style={{ color, fontSize: 24 }}>
@@ -259,8 +368,7 @@ function Score({ label, value, color }: { label: string; value: number; color: s
     </View>
   );
 }
-
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({ color, label }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color }} />
@@ -270,7 +378,6 @@ function Legend({ color, label }: { color: string; label: string }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   scoreRow: { flexDirection: 'row', gap: 10 },
   score: {

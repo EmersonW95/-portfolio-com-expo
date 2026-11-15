@@ -3,34 +3,45 @@ import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { Button, Card, FadeIn, GridBackground, SpecRow, Txt } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
-import { academic, hangmanWords, profile, projects, type IconName } from '@/data/content';
-
-const shortcuts: { icon: IconName; title: string; sub: string; href: string; accent?: boolean }[] = [
+import { academic, hangmanWords, profile, projects } from '@/data/content';
+const shortcuts = [
   { icon: 'user', title: 'Sobre', sub: 'Quem sou e as tecnologias deste app', href: '/sobre' },
   { icon: 'book-open', title: 'Experiência acadêmica', sub: 'Disciplinas e trabalhos', href: '/academico' },
-  { icon: 'briefcase', title: 'Experiência profissional', sub: 'Objetivo e atividades extras', href: '/profissional' },
+  {
+    icon: 'briefcase',
+    title: 'Experiência profissional',
+    sub: 'Objetivo e atividades extras',
+    href: '/profissional',
+  },
   { icon: 'layers', title: 'Projetos', sub: 'Galeria com links do GitHub', href: '/projetos' },
   { icon: 'play-circle', title: 'Jogo da Forca', sub: 'Jogue direto no app', href: '/jogo', accent: true },
 ];
-
 function PulseDot() {
   const v = useRef(new Animated.Value(0.35)).current;
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(v, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        Animated.timing(v, { toValue: 0.35, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      ])
+        Animated.timing(v, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(v, {
+          toValue: 0.35,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]),
     );
     loop.start();
     return () => loop.stop();
   }, [v]);
   return <Animated.View style={[styles.dot, { opacity: v }]} />;
 }
-
 export default function Home() {
   const insets = useSafeAreaInsets();
   return (
@@ -38,7 +49,13 @@ export default function Home() {
       <GridBackground />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 28, paddingHorizontal: 20, paddingBottom: 36, gap: 22 }}>
+        contentContainerStyle={{
+          paddingTop: insets.top + 28,
+          paddingHorizontal: 20,
+          paddingBottom: 36,
+          gap: 22,
+        }}
+      >
         <FadeIn style={{ gap: 10 }}>
           <View style={styles.brandRow}>
             <Txt variant="mono" style={{ letterSpacing: 0.6 }}>
@@ -61,7 +78,12 @@ export default function Home() {
         </FadeIn>
 
         <FadeIn delay={120} style={styles.buttonRow}>
-          <Button variant="primary" icon="mail" label="E-mail" onPress={() => Linking.openURL(`mailto:${profile.email}`)} />
+          <Button
+            variant="primary"
+            icon="mail"
+            label="E-mail"
+            onPress={() => Linking.openURL(`mailto:${profile.email}`)}
+          />
           <Button icon="github" label="GitHub" onPress={() => Linking.openURL(profile.github)} />
           <Button icon="linkedin" label="LinkedIn" onPress={() => Linking.openURL(profile.linkedin)} />
         </FadeIn>
@@ -85,7 +107,11 @@ export default function Home() {
         <FadeIn delay={420} style={{ gap: 10 }}>
           <Txt variant="eyebrow">Navegar</Txt>
           {shortcuts.map((s) => (
-            <Pressable key={s.href} onPress={() => router.navigate(s.href)} style={({ pressed }) => pressed && { opacity: 0.8 }}>
+            <Pressable
+              key={s.href}
+              onPress={() => router.navigate(s.href)}
+              style={({ pressed }) => pressed && { opacity: 0.8 }}
+            >
               <Card accent={s.accent} style={styles.shortcut}>
                 <View style={[styles.iconBox, s.accent && { borderColor: colors.signal }]}>
                   <Feather name={s.icon} size={18} color={s.accent ? colors.signal : colors.paper} />
@@ -107,8 +133,7 @@ export default function Home() {
     </View>
   );
 }
-
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({ value, label }) {
   return (
     <View style={styles.stat}>
       <Txt variant="h2" style={{ color: colors.signal, fontSize: 26 }}>
@@ -120,7 +145,6 @@ function Stat({ value, label }: { value: number; label: string }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.ink1 },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

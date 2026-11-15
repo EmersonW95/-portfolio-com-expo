@@ -1,8 +1,3 @@
-import type { ComponentProps } from 'react';
-import type { Feather } from '@expo/vector-icons';
-
-export type IconName = ComponentProps<typeof Feather>['name'];
-
 export const profile = {
   name: 'Emerson Willian do Nascimento Dias',
   shortName: 'Emerson Dias',
@@ -15,24 +10,24 @@ export const profile = {
   github: 'https://github.com/EmersonW95',
   linkedin: 'https://www.linkedin.com/in/emerson-willian-19984630b/',
 };
-
-export type AcademicItem = {
-  code: string;
-  title: string;
-  discipline: string;
-  description: string;
-  stack: string[];
-  highlights: string[];
-};
-
-export const academic: AcademicItem[] = [
+export const academic = [
   {
     code: 'AC-01',
     title: 'Andador Inteligente — Robótica Inclusiva',
     discipline: 'Robótica Inclusiva',
     description:
       'Sistema de apoio ao monitoramento e segurança de idosos, integrando uma Raspberry Pi a sensores e software para detectar quedas, obter localização e enviar alertas ao responsável.',
-    stack: ['Python', 'Raspberry Pi', 'Flask', 'SQLite', 'Telegram', 'GPS NEO-6M', 'MPU6050', 'Pi Camera', 'YOLO'],
+    stack: [
+      'Python',
+      'Raspberry Pi',
+      'Flask',
+      'SQLite',
+      'Telegram',
+      'GPS NEO-6M',
+      'MPU6050',
+      'Pi Camera',
+      'YOLO',
+    ],
     highlights: [
       'Detecção de quedas e monitoramento de permanência no chão',
       'Alertas automáticos via Telegram e localização por GPS',
@@ -125,7 +120,6 @@ export const academic: AcademicItem[] = [
   ],
   },
 ];
-
 export const extracurricular = [
   {
     code: 'EX-01',
@@ -134,18 +128,7 @@ export const extracurricular = [
       'Atuação como veterano em um projeto de mentoria voltado ao acolhimento de alunos calouros: acompanho dois alunos com encontros semanais de cerca de 30 minutos, oferecendo suporte e orientação na adaptação à graduação.',
   },
 ];
-
-export type Project = {
-  code: string;
-  title: string;
-  description: string;
-  stack: string[];
-  icon: IconName;
-  link?: string;
-  internalRoute?: '/jogo';
-};
-
-export const projects: Project[] = [
+export const projects = [
   {
     code: 'PROJ-01',
     title: 'Andador Inteligente',
@@ -193,7 +176,7 @@ export const projects: Project[] = [
     title: 'Jogo da Forca',
     description:
       'Jogo da Forca em React Native, rodando dentro deste próprio app, com termos de Ciência da Computação.',
-    stack: ['React Native', 'Expo', 'TypeScript', 'react-native-svg'],
+    stack: ['React Native', 'Expo', 'JavaScript', 'react-native-svg'],
     icon: 'target',
     internalRoute: '/jogo',
   },
@@ -207,9 +190,7 @@ export const projects: Project[] = [
   },
 ];
 
-export type Word = { word: string; hint: string };
-
-export const hangmanWords: Word[] = [
+export const hangmanWords = [
   { word: 'JAVASCRIPT', hint: 'Linguagem de programação do navegador' },
   { word: 'PYTHON', hint: 'Linguagem usada no Andador Inteligente' },
   { word: 'RASPBERRY', hint: 'Computador de placa única' },

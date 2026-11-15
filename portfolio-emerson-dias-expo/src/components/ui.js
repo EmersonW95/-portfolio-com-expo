@@ -1,24 +1,9 @@
 import { Feather } from '@expo/vector-icons';
-import { useEffect, useRef, type ReactNode } from 'react';
-import {
-  Animated,
-  Easing,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type TextStyle,
-  type ViewStyle,
-} from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, Path, Pattern, Rect } from 'react-native-svg';
-
 import { colors, fonts, radius } from '@/constants/theme';
-import type { IconName } from '@/data/content';
-
-/* ---------- Fundo quadriculado (papel milimetrado / planta técnica) ---------- */
 
 export function GridBackground() {
   return (
@@ -34,12 +19,7 @@ export function GridBackground() {
     </View>
   );
 }
-
-/* ---------- Tipografia ---------- */
-
-type Variant = 'body' | 'dim' | 'mono' | 'monoDim' | 'eyebrow' | 'h1' | 'h2' | 'h3';
-
-const variantStyles: Record<Variant, TextStyle> = {
+const variantStyles = {
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 23, color: colors.paper },
   dim: { fontFamily: fonts.body, fontSize: 14.5, lineHeight: 22, color: colors.paperDim },
   mono: { fontFamily: fonts.mono, fontSize: 13, color: colors.paper },
@@ -49,17 +29,7 @@ const variantStyles: Record<Variant, TextStyle> = {
   h2: { fontFamily: fonts.semi, fontSize: 22, lineHeight: 27, color: colors.paper },
   h3: { fontFamily: fonts.semi, fontSize: 17, lineHeight: 22, color: colors.paper },
 };
-
-export function Txt({
-  variant = 'body',
-  style,
-  children,
-  ...rest
-}: {
-  variant?: Variant;
-  style?: StyleProp<TextStyle>;
-  children: ReactNode;
-} & Omit<React.ComponentProps<typeof Text>, 'style'>) {
+export function Txt({ variant = 'body', style, children, ...rest }) {
   return (
     <Text {...rest} style={[variantStyles[variant], style]}>
       {children}
@@ -67,19 +37,8 @@ export function Txt({
   );
 }
 
-/* ---------- Animação de entrada ---------- */
-
-export function FadeIn({
-  delay = 0,
-  children,
-  style,
-}: {
-  delay?: number;
-  children: ReactNode;
-  style?: StyleProp<ViewStyle>;
-}) {
+export function FadeIn({ delay = 0, children, style }) {
   const progress = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     Animated.timing(progress, {
       toValue: 1,
@@ -89,7 +48,6 @@ export function FadeIn({
       useNativeDriver: true,
     }).start();
   }, [delay, progress]);
-
   return (
     <Animated.View
       style={[
@@ -98,25 +56,14 @@ export function FadeIn({
           opacity: progress,
           transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }],
         },
-      ]}>
+      ]}
+    >
       {children}
     </Animated.View>
   );
 }
 
-/* ---------- Estrutura de tela ---------- */
-
-export function Screen({
-  eyebrow,
-  title,
-  subtitle,
-  children,
-}: {
-  eyebrow: string;
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-}) {
+export function Screen({ eyebrow, title, subtitle, children }) {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.root}>
@@ -128,7 +75,8 @@ export function Screen({
           paddingHorizontal: 20,
           paddingBottom: 36,
           gap: 18,
-        }}>
+        }}
+      >
         <FadeIn style={{ gap: 8 }}>
           <Txt variant="eyebrow">{eyebrow}</Txt>
           <Txt variant="h1">{title}</Txt>
@@ -139,8 +87,7 @@ export function Screen({
     </View>
   );
 }
-
-export function SectionHeading({ code, title }: { code: string; title: string }) {
+export function SectionHeading({ code, title }) {
   return (
     <View style={styles.sectionHeading}>
       <Txt variant="eyebrow">{code}</Txt>
@@ -150,21 +97,10 @@ export function SectionHeading({ code, title }: { code: string; title: string })
   );
 }
 
-/* ---------- Blocos ---------- */
-
-export function Card({
-  children,
-  style,
-  accent,
-}: {
-  children: ReactNode;
-  style?: StyleProp<ViewStyle>;
-  accent?: boolean;
-}) {
+export function Card({ children, style, accent }) {
   return <View style={[styles.card, accent && styles.cardAccent, style]}>{children}</View>;
 }
-
-export function Tag({ label }: { label: string }) {
+export function Tag({ label }) {
   return (
     <View style={styles.tag}>
       <Txt variant="monoDim" style={{ fontSize: 11 }}>
@@ -173,8 +109,7 @@ export function Tag({ label }: { label: string }) {
     </View>
   );
 }
-
-export function TagRow({ items }: { items: string[] }) {
+export function TagRow({ items }) {
   return (
     <View style={styles.tagRow}>
       {items.map((t) => (
@@ -183,8 +118,7 @@ export function TagRow({ items }: { items: string[] }) {
     </View>
   );
 }
-
-export function Bullets({ items }: { items: string[] }) {
+export function Bullets({ items }) {
   return (
     <View style={{ gap: 6 }}>
       {items.map((item) => (
@@ -200,18 +134,7 @@ export function Bullets({ items }: { items: string[] }) {
     </View>
   );
 }
-
-export function Button({
-  label,
-  icon,
-  onPress,
-  variant = 'ghost',
-}: {
-  label: string;
-  icon?: IconName;
-  onPress: () => void;
-  variant?: 'primary' | 'ghost';
-}) {
+export function Button({ label, icon, onPress, variant = 'ghost' }) {
   const primary = variant === 'primary';
   return (
     <Pressable
@@ -221,32 +144,23 @@ export function Button({
         styles.button,
         primary ? styles.buttonPrimary : styles.buttonGhost,
         pressed && { opacity: 0.75 },
-      ]}>
+      ]}
+    >
       {icon ? <Feather name={icon} size={15} color={primary ? colors.ink0 : colors.paper} /> : null}
       <Text
         style={{
           fontFamily: fonts.monoMedium,
           fontSize: 13,
           color: primary ? colors.ink0 : colors.paper,
-        }}>
+        }}
+      >
         {label}
       </Text>
     </Pressable>
   );
 }
 
-/** Linha de "bloco de título" de desenho técnico: rótulo | valor */
-export function SpecRow({
-  label,
-  value,
-  accent,
-  last,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-  last?: boolean;
-}) {
+export function SpecRow({ label, value, accent, last }) {
   return (
     <View style={[styles.specRow, last && { borderBottomWidth: 0 }]}>
       <View style={styles.specLabel}>
@@ -262,7 +176,6 @@ export function SpecRow({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.ink1 },
   sectionHeading: { flexDirection: 'row', alignItems: 'baseline', gap: 10, marginTop: 8 },

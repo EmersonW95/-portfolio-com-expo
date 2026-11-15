@@ -1,15 +1,9 @@
 import { View } from 'react-native';
-
 import pkg from '../../package.json';
-
 import { Card, FadeIn, Screen, SectionHeading, TagRow, Txt } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { profile } from '@/data/content';
-
-type Mod = { name: string; purpose: string };
-type Group = { code: string; title: string; items: Mod[] };
-
-const groups: Group[] = [
+const groups = [
   {
     code: 'A',
     title: 'Base do app',
@@ -17,7 +11,6 @@ const groups: Group[] = [
       { name: 'expo', purpose: 'SDK e ferramentas (Expo Go, bundler, EAS Update)' },
       { name: 'react-native', purpose: 'Componentes nativos: View, Text, Pressable, ScrollView, Animated' },
       { name: 'react', purpose: 'Componentes, hooks e estado (useState, useEffect, useRef)' },
-      { name: 'typescript', purpose: 'Tipagem estática de todo o código' },
     ],
   },
   {
@@ -65,23 +58,20 @@ const groups: Group[] = [
     ],
   },
 ];
-
-const deps = { ...pkg.dependencies, ...pkg.devDependencies } as Record<string, string>;
-const versionOf = (name: string) => (deps[name] ?? '').replace(/^[~^]/, '');
-
+const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+const versionOf = (name) => (deps[name] ?? '').replace(/^[~^]/, '');
 const tree = `src/
 ├─ app/
-│  ├─ _layout.tsx      abas + fontes
-│  ├─ index.tsx        Home
-│  ├─ sobre.tsx        Sobre
-│  ├─ academico.tsx    Exp. acadêmica
-│  ├─ profissional.tsx Exp. profissional
-│  ├─ projetos.tsx     Projetos
-│  └─ jogo.tsx         Jogo da Forca
-├─ components/         UI e barra de abas
-├─ constants/theme.ts  cores e fontes
-└─ data/content.ts     todo o conteúdo`;
-
+│  ├─ _layout.js        abas + fontes
+│  ├─ index.js          Home
+│  ├─ sobre.js          Sobre
+│  ├─ academico.js      Exp. acadêmica
+│  ├─ profissional.js   Exp. profissional
+│  ├─ projetos.js       Projetos
+│  └─ jogo.js           Jogo da Forca
+├─ components/          UI e barra de abas
+├─ constants/theme.js   cores e fontes
+└─ data/content.js      todo o conteúdo`;
 export default function Sobre() {
   return (
     <Screen eyebrow="Sobre" title="Quem sou e como este app foi feito">
@@ -89,9 +79,9 @@ export default function Sobre() {
         <Card>
           <Txt variant="h3">{profile.name}</Txt>
           <Txt variant="dim">
-            Estudante do {profile.period} de {profile.course} na {profile.institution}. Já passei por várias camadas:
-            sistemas embarcados com Raspberry Pi e sensores, back-end em Java com Spring Boot e front-end com React e
-            Next.js. Este app leva o portfólio para o mobile com React Native e Expo.
+            Estudante do {profile.period} de {profile.course} na {profile.institution}. Já passei por várias
+            camadas: sistemas embarcados com Raspberry Pi e sensores, back-end em Java com Spring Boot e
+            front-end com React e Next.js. Este app leva o portfólio para o mobile com React Native e Expo.
           </Txt>
           <Txt variant="dim">{profile.goal}</Txt>
         </Card>
@@ -135,7 +125,8 @@ export default function Sobre() {
             borderWidth: 1,
             borderRadius: radius.md,
             padding: 14,
-          }}>
+          }}
+        >
           <Txt variant="mono" style={{ fontSize: 11.5, lineHeight: 17, color: colors.paperDim }}>
             {tree}
           </Txt>
@@ -143,7 +134,9 @@ export default function Sobre() {
       </FadeIn>
 
       <SectionHeading code="§" title="APIs do React Native usadas" />
-      <TagRow items={['Animated', 'Pressable', 'ScrollView', 'StyleSheet', 'Linking', 'useWindowDimensions']} />
+      <TagRow
+        items={['Animated', 'Pressable', 'ScrollView', 'StyleSheet', 'Linking', 'useWindowDimensions']}
+      />
     </Screen>
   );
 }

@@ -1,14 +1,16 @@
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Linking, View } from 'react-native';
-
 import { Button, Card, FadeIn, Screen, TagRow, Txt } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { projects } from '@/data/content';
-
 export default function Projetos() {
   return (
-    <Screen eyebrow="§4 — Galeria" title="Projetos" subtitle="Trabalhos realizados, com link para o código no GitHub.">
+    <Screen
+      eyebrow="§4 — Galeria"
+      title="Projetos"
+      subtitle="Trabalhos realizados, com link para o código no GitHub."
+    >
       {projects.map((p, i) => (
         <FadeIn key={p.code} delay={80 + i * 70}>
           <Card>
@@ -23,7 +25,8 @@ export default function Projetos() {
                   backgroundColor: colors.ink2,
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 <Feather name={p.icon} size={20} color={colors.signal} />
               </View>
               <View style={{ flex: 1 }}>
@@ -35,7 +38,11 @@ export default function Projetos() {
             <TagRow items={p.stack} />
             <View style={{ flexDirection: 'row', marginTop: 4 }}>
               {p.link ? (
-                <Button icon="external-link" label="Ver repositório" onPress={() => Linking.openURL(p.link!)} />
+                <Button
+                  icon="external-link"
+                  label="Ver repositório"
+                  onPress={() => Linking.openURL(p.link)}
+                />
               ) : (
                 <Button
                   variant="primary"

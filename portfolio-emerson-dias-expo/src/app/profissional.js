@@ -1,12 +1,14 @@
 import { View } from 'react-native';
-
 import { Card, FadeIn, Screen, SectionHeading, Txt } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { extracurricular, profile } from '@/data/content';
-
 export default function Profissional() {
   return (
-    <Screen eyebrow="§2 — Carreira" title="Experiência profissional" subtitle="Objetivo atual e atividades fora da sala de aula.">
+    <Screen
+      eyebrow="§2 — Carreira"
+      title="Experiência profissional"
+      subtitle="Objetivo atual e atividades fora da sala de aula."
+    >
       <FadeIn delay={80}>
         <Card accent>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -18,19 +20,18 @@ export default function Profissional() {
                 borderRadius: radius.pill,
                 paddingHorizontal: 10,
                 paddingVertical: 2,
-              }}>
+              }}
+            >
               <Txt variant="monoDim" style={{ color: colors.ok, fontSize: 11 }}>
                 em aberto
               </Txt>
             </View>
           </View>
           <Txt variant="h3">Primeira oportunidade em andamento</Txt>
+          <Txt variant="dim">Ainda não possuo experiência profissional formal registrada. {profile.goal}</Txt>
           <Txt variant="dim">
-            Ainda não possuo experiência profissional formal registrada. {profile.goal}
-          </Txt>
-          <Txt variant="dim">
-            A base vem dos projetos acadêmicos: de sistemas embarcados a back-end e front-end, agora incluindo apps
-            móveis com React Native.
+            A base vem dos projetos acadêmicos: de sistemas embarcados a back-end e front-end, agora incluindo
+            apps móveis com React Native.
           </Txt>
         </Card>
       </FadeIn>

@@ -1,13 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
-import { TabList, TabTrigger, type TabListProps, type TabTriggerSlotProps } from 'expo-router/ui';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions, type PressableProps } from 'react-native';
+import { TabList, TabTrigger } from 'expo-router/ui';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { colors, fonts } from '@/constants/theme';
-import type { IconName } from '@/data/content';
-
-type TabButtonProps = TabTriggerSlotProps & { icon: IconName; label: string; to: string };
 
 function useTabMetrics() {
   const { width } = useWindowDimensions();
@@ -16,31 +12,35 @@ function useTabMetrics() {
   if (width < 900) return { icon: 24, font: 12, top: 12, maxWidth: 640 };
   return { icon: 26, font: 13, top: 14, maxWidth: 720 };
 }
-
-function TabButton({ icon, label, to, isFocused, children: _children, ...props }: TabButtonProps) {
+function TabButton({ icon, label, to, isFocused, children: _children, ...props }) {
   const pathname = usePathname();
   const m = useTabMetrics();
+
   const active = to === '/' ? pathname === '/' : pathname === to || pathname.startsWith(`${to}/`);
   const tint = active || isFocused ? colors.signal : colors.paperDim;
-
   return (
     <Pressable
-      {...(props as unknown as PressableProps)}
-      onPress={() => router.navigate(to as never)}
+      {...props}
+      onPress={() => router.navigate(to)}
       style={[styles.button, { paddingTop: m.top }]}
       accessibilityRole="tab"
       accessibilityState={{ selected: active }}
-      accessibilityLabel={label}>
+      accessibilityLabel={label}
+    >
       <View style={[styles.indicator, active && styles.indicatorOn]} />
       <Feather name={icon} size={m.icon} color={tint} />
-      <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[styles.label, { color: tint, fontSize: m.font }]}>
+      <Text
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+        style={[styles.label, { color: tint, fontSize: m.font }]}
+      >
         {label}
       </Text>
     </Pressable>
   );
 }
-
-function TabBarContainer(props: TabListProps) {
+function TabBarContainer(props) {
   const insets = useSafeAreaInsets();
   const m = useTabMetrics();
   return (
@@ -51,7 +51,6 @@ function TabBarContainer(props: TabListProps) {
     </View>
   );
 }
-
 export default function AppTabBar() {
   return (
     <TabList asChild>
@@ -78,7 +77,6 @@ export default function AppTabBar() {
     </TabList>
   );
 }
-
 const styles = StyleSheet.create({
   bar: {
     alignItems: 'center',

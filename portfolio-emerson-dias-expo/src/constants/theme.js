@@ -11,8 +11,7 @@ export const colors = {
   signalDim: '#a8461f',
   ok: '#4ade80',
   bad: '#ff5d5d',
-} as const;
-
+};
 export const fonts = {
   body: 'SpaceGrotesk_400Regular',
   medium: 'SpaceGrotesk_500Medium',
@@ -20,6 +19,5 @@ export const fonts = {
   bold: 'SpaceGrotesk_700Bold',
   mono: 'IBMPlexMono_400Regular',
   monoMedium: 'IBMPlexMono_500Medium',
-} as const;
-
-export const radius = { sm: 4, md: 8, pill: 999 } as const;
+};
+export const radius = { sm: 4, md: 8, pill: 999 };
